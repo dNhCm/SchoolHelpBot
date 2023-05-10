@@ -1,0 +1,29 @@
+{
+  "1": [
+    [
+      "uah",
+      ["wwlit", "art"],
+      "pe"
+    ],
+    [
+      "bio",
+      "none",
+      "math"
+    ],
+    [
+      "ualang&lit",
+      "none",
+      "def"
+    ],
+    [
+      "none",
+      "none",
+      ["physic", "chemistry"]
+    ],
+    [
+      "none",
+      "eng",
+      "def"
+    ]
+  ]
+}
