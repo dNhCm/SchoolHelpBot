@@ -15,7 +15,7 @@ from tgbot.misc.commands_callbacks import successful_change
 
 
 async def format_ex_msg(message: types.Message):
-    await message.answer('/set <str(time in format "H:mm")> <str(subject from subject list)>', parse_mode='MARKDOWN')
+    await message.answer('/change <str(time in format "H:mm")> <str(subject from subject list)>', parse_mode='MARKDOWN')
 
 
 async def change(message: types.Message):

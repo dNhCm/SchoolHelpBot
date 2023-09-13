@@ -146,7 +146,7 @@ class SubjectAlgorythm:
             cls.subject_tasks += [asyncio.create_task(cls.subject(lesson['time'], lesson['subject']), name=f"subject : {lesson['time'].format('H:mm')} : {lesson['subject']}")]
 
         i_intend = 0
-        for lesson, task_i in zip(cls.schedule, range(len(cls.subject_tasks))):
+        for lesson, task_i in zip(cls.schedule, range(len(cls.subject_tasks.copy()))):
             time = lesson['time']
 
             now_time = get_now()
@@ -155,6 +155,8 @@ class SubjectAlgorythm:
 
             if delta.days < 0:
                 if (time - now_time).days < 0:
+                    task = cls.subject_tasks[task_i - i_intend]
+                    cls.subject_tasks.remove(task); i_intend += 1
                     continue
                 else:
                     delta = timedelta()
@@ -213,6 +215,8 @@ class SubjectAlgorythm:
 
             if delta.days < 0:
                 if (subject_time - now_time).days < 0:
+                    task = cls.next_subject_tasks[task_i - i_intend]
+                    cls.next_subject_tasks.remove(task); i_intend += 1;
                     continue
                 else:
                     delta = timedelta()
