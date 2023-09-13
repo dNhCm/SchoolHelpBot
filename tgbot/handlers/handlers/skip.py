@@ -7,7 +7,7 @@ from tgbot.misc.commands_callbacks import set_skips
 
 
 async def format_ex_msg(message: types.Message):
-    await message.answer('/skip <int(count of loop to skip)>')
+    await message.answer('/skip <int(count of loop to skip)>', parse_mode='MARKDOWN')
 
 
 async def skip(message: types.Message):

@@ -13,7 +13,7 @@ from misc.get_project_path import get_project_path
 
 class MorningAlgorythm:
 
-    isMorning: bool = True
+    isMorning: bool = True  # Attribute which answers whether the whole algorithm will work
 
     @classmethod
     def set_is_morning(cls, is_morning: bool):

@@ -3,11 +3,9 @@ from asyncio import Task
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Command
-from aiogram.utils.text_decorations import MarkdownDecoration
 
 from algorythms.misc.str_time_to_arrow import str_to_arrow
 from algorythms.subjects_algorythm.subjects import SubjectAlgorythm
-from bot import logger
 from misc.get_project_path import get_project_path
 from tgbot.handlers.filters import IsPrivate
 from tgbot.handlers.filters.is_admin import IsAdmin
@@ -21,19 +19,28 @@ async def format_ex_msg(message: types.Message):
 async def change(message: types.Message):
     args = message.get_args().split(' ')
 
-    if len(args) != 2: await format_ex_msg(message); return
-    try: str_to_arrow(args[0]); time = args[0]
-    except: await format_ex_msg(message); return
+    # Checkpoints for correct args
+    if len(args) != 2:
+        await format_ex_msg(message); return
+    try:
+        str_to_arrow(args[0]); time = args[0]
+    except:
+        await format_ex_msg(message); return
     if args[1] == '[':
         subjects = [args[1][2:-2].split("', '")]
-    else: subjects = [args[1]]
+    else:
+        subjects = [args[1]]
     for subject in subjects:
-        if not subject in [subject[:-4] for subject in os.listdir(get_project_path()+'\\data\\subjects')]: await format_ex_msg(message); return
+        if not subject in [subject[:-4] for subject in os.listdir(get_project_path()+'\\data\\subjects')]:
+            await format_ex_msg(message); return
 
+    # Change and get callback from it
     change_callback: bool | Task
     if len(subjects) == 0:
         change_callback = SubjectAlgorythm.change(time=time, subject=subjects[0])
     else: change_callback = SubjectAlgorythm.change(time=time, subject=subjects)
+
+    # Check for answer, and feedback to user
     if type(change_callback) is bool:
         if change_callback:
             await successful_change(message, args)

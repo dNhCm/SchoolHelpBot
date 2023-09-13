@@ -4,7 +4,7 @@ sends subjects messages to group by the schedule,
 and write time for the next lesson. He has list of commands,
 for another pupils its just get lesson schedules and time schedule,
 and for admins to stop, resume, change subject for a day, and stop the bot for the appointed time.
-
+he does not leave a trail of messages.
 
 Setup before starting:
 1. Create new bot by https://t.me/BotFather, setup it anyhow u want.
@@ -12,10 +12,10 @@ Setup before starting:
 3. In .env change BOT_TOKEN to your bot token, in GROUP_ID write id of your school group, and you can set admins by space key, also write ids of them
 4. Go to data folder by path %ROOT%\data
 5. Change subjects list >> just create file with name of subject in txt format file
-6. In subjects_schedules change schedules.json where start from names of weeks, after weeakdays (from 0 to 6) and only then subjects
+6. In subjects_schedules change schedules.json where start from names of weeks, after weekdays (from 0 to 6) and only then subjects
 7. Than add also photo of schedule (if you have .pdf, then just convert it to .png) call it like schedules.png
 8. In time_schedule change time schedule in schedule.json
-9. Then also change time schedule text (schedule.txt)
+9. Then also add photo of schedule in png format (schedule.png)
 10. Go to config.ini, but when u had already read config readme file, set parameters like you need.
 
 

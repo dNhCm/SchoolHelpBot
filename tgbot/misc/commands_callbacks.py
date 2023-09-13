@@ -15,6 +15,7 @@ async def stopped_algorythm(message: types.Message):
 
 
 async def resumed_algorythm(message: types.Message):
+    logger.info('subject_algorythm was resumed')
     bot = message.bot
     admins = bot.data['config'].tgbot.admins
     for admin in admins:

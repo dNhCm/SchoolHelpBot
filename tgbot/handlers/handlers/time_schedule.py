@@ -5,10 +5,8 @@ from tgbot.handlers.filters import IsPrivate
 
 
 async def time_schedule(message: types.Message):
-    with open('data/time_schedule/schedule.txt', 'r', encoding='UTF-8') as f:
-        text = ''.join(f.readlines())
-
-    await message.answer(text)
+    photo = open('data/time_schedule/schedule.png', 'rb')
+    await message.bot.send_photo(chat_id=message.from_id, photo=photo)
 
 
 def register_time_schedule(dp: Dispatcher):
