@@ -188,6 +188,8 @@ class SubjectAlgorythm:
 
         ids: list = await text(subject)
 
+        if len(ids) == 0: return False
+
         now_time = get_now()
         deleting_subject_delay = int(config["SCHEDULE"]["deleting_subject_delay"])
         delta = time.shift(minutes=deleting_subject_delay) - now_time
@@ -249,6 +251,10 @@ class SubjectAlgorythm:
         localized_time = humanize_delta(delta)
 
         id, text = await next_text(subject, localized_time)
+
+        if type(text) is bool:
+            if not text:
+                return False
 
         while True:
             await asyncio.sleep(60)

@@ -15,7 +15,8 @@ async def text(subject: list|str) -> list[int]:  # Warns about lessons, and retu
     bot = dp.bot
     ids: list[int] = []
     for text in text_list:
-        response = await bot.send_message(chat_id=bot.data['config'].tgbot.group_id, text=text)
+        try: response = await bot.send_message(chat_id=bot.data['config'].tgbot.group_id, text=text)
+        except: return []
         ids += [response['message_id']]
 
     return ids

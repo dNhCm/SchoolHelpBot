@@ -1,24 +1,33 @@
-
-from typing import Union
+import asyncio
+from typing import Union, Optional
 
 from . import dp
 
 
-async def next_text(next_subject: Union[str, list], localized_time: str) -> list[int, str] | bool:
+async def next_text(next_subject: Union[str, list], localized_time: str) -> list[Optional[int], str | bool]:
     if type(next_subject) is str:
         subjects = [next_subject]
     else: subjects = next_subject
 
-    text: str
+    subject_list: list[str] = []
     for subject in subjects:
         with open(f'data/subjects/{subject}.txt', encoding='UTF-8') as f:
-            text = ''.join(f.readlines()).split('\n')[-1]
+            subject_list += [''.join(f.readlines()).split('\n')[-1]]
+    for i, subject in enumerate(subject_list.copy()):
+        if subject == '':
+            subject_list.pop(i)
+    if len(subject_list) == 0: return [None, False]
+
+    text: str = ''
+    for subject in subject_list:
+        text = text + subject + ' '
     text = text + f'\n{localized_time}'
 
     bot = dp.bot
     id: int
-    try: response = await bot.send_message(chat_id=bot.data['config'].tgbot.group_id, text=text)
-    except: return False
+    try:
+        response = await bot.send_message(chat_id=bot.data['config'].tgbot.group_id, text=text)
+    except: return [None, False]
     id = response['message_id']
 
     return [id, text]
