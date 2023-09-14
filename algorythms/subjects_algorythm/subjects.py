@@ -1,8 +1,7 @@
 import asyncio
 import json
-from asyncio import Task, CancelledError
+from asyncio import Task
 from datetime import timedelta
-from typing import Coroutine, Optional
 
 from arrow import Arrow
 
@@ -140,13 +139,16 @@ class SubjectAlgorythm:
         cls.change_info = []
 
         # Info about schedules for debugging
-        logger.info("cls.schedule: ", cls.schedule)
-        logger.info("cls.next_schedule: ", cls.next_schedule)
+        logger.info(f"cls.schedule: {cls.schedule}")
+        logger.info(f"cls.next_schedule: {cls.next_schedule}")
 
     @classmethod
     async def subject_manager(cls) -> None:  # Manager of sending subject messages
         for lesson in cls.schedule:
-            cls.subject_tasks += [asyncio.create_task(cls.subject(lesson['time'], lesson['subject']), name=f"subject : {lesson['time'].format('H:mm')} : {lesson['subject']}")]
+            cls.subject_tasks += [asyncio.create_task(cls.subject(
+                lesson['time'], lesson['subject']),
+                name=f"subject : {lesson['time'].format('H:mm')} : {lesson['subject']}"
+            )]
 
         # Awaiting every task in time
         i_intend = 0
@@ -219,7 +221,10 @@ class SubjectAlgorythm:
     @classmethod
     async def next_subject_manager(cls) -> None:  # Manager which is responsible for warning the subsequent lesson
         for lesson in cls.next_schedule:
-            cls.next_subject_tasks += [asyncio.create_task(cls.next_subject(lesson['send_time'], lesson['subject_time'], lesson["subject"]), name=f"next_subject : {lesson['send_time'].format('H:mm')} : {lesson['subject_time'].format('H:mm')} : {lesson['subject']}")]
+            cls.next_subject_tasks += [asyncio.create_task(
+                cls.next_subject(lesson['send_time'], lesson['subject_time'], lesson["subject"]),
+                name=f"next_subject : {lesson['send_time'].format('H:mm')} : {lesson['subject_time'].format('H:mm')} : {lesson['subject']}"
+            )]
 
         # Awaiting every task in time
         i_intend = 0
@@ -282,7 +287,7 @@ class SubjectAlgorythm:
 
         # Updating every minute to know how much time is left to wait
         while True:
-            await asyncio.sleep(60)
+            await asyncio.sleep(30)
 
             # Checkpoint if it is on the change_info list. if it is, then delete itself
             for change_task in SubjectAlgorythm.change_info:
