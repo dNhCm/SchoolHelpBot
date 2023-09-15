@@ -342,7 +342,7 @@ class SubjectAlgorythm:
         SubjectAlgorythm.resume()
 
     @classmethod
-    def change(cls, time: str, subject: str | list[str]) -> bool | Task:  # Algorythm that
+    def change(cls, time: str, subject: str | list[str]) -> bool | Task:  # Algorythm which urgently changes a subject at an appointed time from time schedule
         # Find task to change
         for i, task in enumerate(cls.subject_tasks):
             task_time = task.get_name().split(' : ')[1]
@@ -350,7 +350,10 @@ class SubjectAlgorythm:
                 # Cancel task, and create a new one for the same time only with changed subject
                 arrow_time: Arrow = cls.schedule[len(cls.schedule)-len(cls.subject_tasks)+i]['time']
                 cls.subject_tasks[i].cancel()
-                cls.subject_tasks[i] = task.get_loop().create_task(cls.subject(time=arrow_time, subject=subject), name=f"subject : {arrow_time.format('H:mm')} : {subject}")
+                cls.subject_tasks[i] = task.get_loop().create_task(
+                    cls.subject(time=arrow_time, subject=subject),
+                    name=f"subject : {arrow_time.format('H:mm')} : {subject}"
+                )
 
                 # Getting next_task and next_subject too
                 next_i = i-1
@@ -360,10 +363,16 @@ class SubjectAlgorythm:
                 if next_i != -1:
                     if next_task.get_name().split(' : ')[2] == time:
                         cls.next_subject_tasks[next_i].cancel()
-                        cls.next_subject_tasks[next_i] = next_task.get_loop().create_task(cls.next_subject(send_time=next_subject['send_time'], subject_time=next_subject['subject_time'], subject=subject), name=f"next_subject : {next_subject['send_time']} : {next_subject['subject_time']} : {subject}")
+                        cls.next_subject_tasks[next_i] = next_task.get_loop().create_task(
+                            cls.next_subject(send_time=next_subject['send_time'], subject_time=next_subject['subject_time'], subject=subject),
+                            name=f"next_subject : {next_subject['send_time']} : {next_subject['subject_time']} : {subject}"
+                        )
                 else:
                     cls.change_info += [{'time': time, 'subject': next_subject['subject']}]
-                    task = next_task.get_loop().create_task(cls.next_subject(send_time=next_subject['send_time'], subject_time=next_subject['subject_time'],subject=subject))
+                    task = next_task.get_loop().create_task(
+                        cls.next_subject(send_time=next_subject['send_time'], subject_time=next_subject['subject_time'],subject=subject),
+                        name=f"next_subject : {next_subject['send_time']} : {next_subject['subject_time']} : {subject}"
+                    )
                     return task
                 return True
         # if there is no task with this time, then return False

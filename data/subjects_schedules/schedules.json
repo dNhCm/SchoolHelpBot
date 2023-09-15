@@ -2,71 +2,36 @@
   "A":
   [
     [
-      "physic",
-      "math",
-      "ualang&lit",
-      "physic",
-      "physic",
-      "math",
-      "ualang&lit",
-      "physic"
-    ],
-    [
-      "info",
       "math",
       "eng",
-      "eco",
-      "info",
+      "wwh"
+    ],
+    [
       "math",
       "eng",
-      "eco"
+      "wwh"
     ],
     [
-      "info",
-      "ualang&lit",
-      "chemistry",
-      "eco",
-      "info",
-      "ualang&lit",
-      "chemistry",
-      "eco"
-    ],
-    [
-      "ualang&lit",
       "math",
-      "wwlit",
-      "info",
-      "ualang&lit",
+      "eng",
+      "wwh"
+    ],
+    [
       "math",
-      "wwlit",
-      "info"
+      "eng",
+      "wwh"
     ],
     [
-      "wwh",
-      "def",
-      "pe",
-      "bio",
-      "wwh",
-      "def",
-      "pe",
-      "bio"
+      "math",
+      "eng",
+      "wwh"
     ],
     [
-      "none",
-      "none",
-      "none",
-      "none",
-      "none",
       "none",
       "none",
       "none"
     ],
     [
-      "none",
-      "none",
-      "none",
-      "none",
-      "none",
       "none",
       "none",
       "none"
@@ -75,71 +40,36 @@
   "B":
   [
     [
-      "physic",
       "math",
-      "pe",
-      "ualang&lit",
-      "physic",
-      "math",
-      "pe",
-      "ualang&lit"
-    ],
-    [
-      "math",
-      "wwlit",
-      "uah",
-      "chemistry",
-      "math",
-      "wwlit",
-      "uah",
-      "chemistry"
-    ],
-    [
-      "info",
-      "none",
-      "math",
-      "eco",
-      "info",
-      "none",
-      "math",
-      "eco"
-    ],
-    [
-      "math",
-      "wwh",
-      "pe",
-      "ualang&lit",
-      "math",
-      "wwh",
-      "pe",
-      "ualang&lit"
-    ],
-    [
-      "def",
-      "physic",
       "eng",
-      "bio",
-      "def",
-      "physic",
-      "eng",
-      "bio"
+      "wwh"
     ],
     [
-      "none",
-      "none",
-      "none",
-      "none",
-      "none",
+      "math",
+      "eng",
+      "wwh"
+    ],
+    [
+      "math",
+      "eng",
+      "wwh"
+    ],
+    [
+      "math",
+      "eng",
+      "wwh"
+    ],
+    [
+      "math",
+      "eng",
+      "wwh"
+    ],
+    [
       "none",
       "none",
       "none"
     ],
     [
-      "none",
-      "none",
-      "none",
-      "none",
-      "none",
       "none",
       "none",
       "none"
