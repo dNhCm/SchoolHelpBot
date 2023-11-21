@@ -1,5 +1,7 @@
 
-from . import dp
+from tgbot.data.config import get_config
+
+from . import bot
 
 
 async def text(subject: list|str) -> list[int]:  # Warns about lessons, and returns the ids of the messages to delete in future
@@ -12,11 +14,12 @@ async def text(subject: list|str) -> list[int]:  # Warns about lessons, and retu
         with open(f'data/subjects/{subject}.txt', encoding='UTF-8') as f:
             text_list += ''.join(f.readlines()).split('\n')
 
-    bot = dp.bot
     ids: list[int] = []
     for text in text_list:
-        try: response = await bot.send_message(chat_id=bot.data['config'].tgbot.group_id, text=text)
-        except: return []
+        try:
+            response = await bot.send_message(chat_id=get_config().tgbot.group_id, text=text)
+        except:
+            return []
         ids += [response['message_id']]
 
     return ids

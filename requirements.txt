@@ -1,4 +1,7 @@
-aiogram=2.25
+aiogram
+redis
 environs
+aiosqlite
+APScheduler
 arrow
 asyncio

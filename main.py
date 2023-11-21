@@ -3,15 +3,15 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 
-from bot import building as tgbot_building, starting as tgbot_starting, logger
+from bot import build as tgbot_build, start as tgbot_start, logger
 from algorythms.subjects_algorythm.subjects import main as algorythm_main
 
 
 async def tgbot(dp: Dispatcher, bot: Bot):
     try:
-        await tgbot_starting(dp, bot)
+        await tgbot_start(dp, bot)
     except (KeyboardInterrupt, SystemExit):
-        logger.error('Bot stopped!')
+        logger.error('Bot was stopped!')
 
 
 async def algorythm():
@@ -20,7 +20,7 @@ async def algorythm():
 
 # Main
 async def main():
-    dp, bot = tgbot_building()
+    dp, bot = tgbot_build()
 
     await asyncio.gather(
         tgbot(dp, bot),
@@ -28,4 +28,7 @@ async def main():
     )
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        logger.error('Script was stopped!')

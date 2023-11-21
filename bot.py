@@ -1,46 +1,67 @@
-import logging
+import asyncio
+from asyncio import CancelledError
 
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage
+from redis import Redis
 
-from tgbot.config import load_config
+from misc.logger import logger
+from tgbot.data.config import get_config
 
-logger = logging.getLogger(__name__)
 
+def build() -> [Bot, Dispatcher]:
+    config = get_config()
 
-def building() -> list[Dispatcher, Bot]:
-    logging.basicConfig(
-        level=logging.INFO,
-        format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
+    bot = Bot(
+        token=config.tgbot.token
     )
-    logger.info("Starting bot")
-    config = load_config(".env")
 
-    bot = Bot(token=config.tgbot.bot_token, parse_mode='HTML')
-    bot['config'] = config
-    storage = MemoryStorage()
-    dp = Dispatcher(bot, storage=storage)
+    if config.tgbot.use_redis:
+        redis = Redis(
+            host=config.redis.host,
+            port=config.redis.port,
+            password=config.redis.password
+        )
+        storage = RedisStorage(redis)
+    else:
+        storage = MemoryStorage()
 
-    from tgbot.handlers import register as register_all_handlers
-    register_all_handlers(dp)
-    from tgbot.scripts import register as register_scripts
-    register_scripts(dp)
+    dp = Dispatcher(
+        storage=storage
+    )
 
-    return [dp, bot]
+    from tgbot.scripts import register_scripts
+    register_scripts(bot, dp)
+    from tgbot.utils.scheduler import register_scheduler
+    register_scheduler(bot)
+    from tgbot.routers import register_routers
+    register_routers(dp)
+
+    return [bot, dp]
 
 
-async def starting(dp: Dispatcher, bot: Bot) -> bool:
-    # start
+async def start(bot: Bot, dp: Dispatcher):
+    from tgbot.utils.menu.commands import register_my_commands
+
+    from tgbot.models import connect_models
+    await connect_models()
+
     try:
-        await dp.start_polling()
-        return True
+        await register_my_commands(bot)
+        await dp.start_polling(bot)
     finally:
         await dp.storage.close()
-        await dp.storage.wait_closed()
         await bot.session.close()
-        return False
 
 
 async def main():
-    dp, bot = building()
-    await starting(dp, bot)
+    bot, dp = build()
+    await start(bot, dp)
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit, CancelledError):
+        logger.warn('Bot was stopped')

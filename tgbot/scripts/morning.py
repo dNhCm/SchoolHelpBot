@@ -1,8 +1,9 @@
 from random import choice
 
 from data.config import config
+from tgbot.data.config import get_config
 
-from . import dp
+from . import bot
 
 
 async def morning(week: str, weekday: int) -> bool:
@@ -14,8 +15,7 @@ async def morning(week: str, weekday: int) -> bool:
     text = good_morning + '\n' + localized_week + ' ' + week + '\n' + weekday + '!'
     print(text)
 
-    bot = dp.bot
-    try: await bot.send_message(chat_id=bot.data['config'].tgbot.group_id, text=text)
+    try: await bot.send_message(chat_id=get_config().tgbot.group_id, text=text)
     except: return False
 
     return True

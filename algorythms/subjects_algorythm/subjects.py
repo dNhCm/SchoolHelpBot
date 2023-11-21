@@ -13,13 +13,13 @@ from data.config import config
 from algorythms.misc.what_week import week as what_week
 from algorythms.misc.str_time_to_arrow import str_to_arrow
 from algorythms.morning_algorythm.morning import main as morning_main
-from misc.get_project_path import get_project_path
+from misc.root import get_root
 
 
 class SubjectAlgorythm:
     week: str = None  # Current work week
     schedule: list[dict[str: Arrow, str: str | list[str]]] = []  # List of lessons where time and subject as well for current weekday
-    next_schedule: list[dict['send_time': Arrow, 'subject_time': Arrow, 'subject': str]] = []  # List of lessons where send time, subject time and subject for sending a message prematurely saying when this subject will be, for current weekday
+    next_schedule: list[dict[str: Arrow, str: Arrow, str: str]] = []  # List of lessons where send time, subject time and subject for sending a message prematurely saying when this subject will be, for current weekday
     subject_tasks: list[Task]
     next_subject_tasks: list[Task]
 
@@ -27,7 +27,7 @@ class SubjectAlgorythm:
     time_schedule: list[str]
 
     isStopped: bool = False
-    change_info: list[dict['time': str, 'subject': str]]  # Here incomes lesson which require urgent removal from next_subject_task, this does not concern subjects_task, because if lesson message has already been sent, then it's impossible to change the lesson itself during the lesson (logic)
+    change_info: list[dict[str: str, str: str]]  # Here incomes lesson which require urgent removal from next_subject_task, this does not concern subjects_task, because if lesson message has already been sent, then it's impossible to change the lesson itself during the lesson (logic)
 
     @classmethod
     def preparing(cls, days_step: int = 0) -> None:
@@ -43,14 +43,14 @@ class SubjectAlgorythm:
         """
 
         # Getting subjects_schedules and time_schedule
-        project_path = get_project_path()
-        data_path = project_path+'\\data'
-        cls.subjects_schedules = json.load(open(data_path+"\\subjects_schedules\\schedules.json"))
-        cls.time_schedule = json.load(open(data_path+"\\time_schedule\\schedule.json"))
+        project_path = get_root()
+        data_path = project_path+'/data'
+        cls.subjects_schedules = json.load(open(data_path+"/subjects_schedules/schedules.json"))
+        cls.time_schedule = json.load(open(data_path+"/time_schedule/schedule.json"))
 
         # Clearing
-        cls.schedule: list[dict['time': Arrow, 'subject': str]] = []
-        cls.next_schedule: list[dict['send_time': Arrow, 'next_subject_time': Arrow, 'subject': str]] = []
+        cls.schedule: list[dict[str: Arrow, str: str]] = []  # [{'time': Arrow, 'subject': str}]
+        cls.next_schedule: list[dict[str: Arrow, str: Arrow, str: str]] = []  # [{'send_time': Arrow, 'next_subject_time': Arrow, 'subject': str}]
 
         # Get week and weekday
         cls.week = what_week(cls.subjects_schedules, cls.week, days_step)
@@ -66,7 +66,9 @@ class SubjectAlgorythm:
             if lesson["subject"] == "none":
                 cls.schedule.remove(lesson)
 
-        if len(cls.schedule) == 0: cls.preparing(days_step+1); return
+        if len(cls.schedule) == 0:
+            cls.preparing(days_step+1)
+            return
 
         # Getting weeks in contracting like we have ["A", "B", "C"] list of weeks, and now "B" week, then current_weeks will be ["B", "C", "A", "B"]
         weeks = list(cls.subjects_schedules)
@@ -75,7 +77,7 @@ class SubjectAlgorythm:
         if current_weekday == 6:
             try:
                 current_weeks += [weeks[weeks.index(cls.week) + 1]]
-            except:
+            except IndexError:
                 current_weeks += weeks[0]
         else:
             current_weeks += [cls.week]
@@ -84,7 +86,7 @@ class SubjectAlgorythm:
             index = weeks.index(current_weeks[-1]) + 1
             try:
                 current_weeks += [weeks[index]]
-            except:
+            except IndexError:
                 index = 0
                 current_weeks += [weeks[index]]
         else:
@@ -112,15 +114,19 @@ class SubjectAlgorythm:
                     if subject != "none":
                         days_sum = 0
                         for week in range(len(current_weeks[:week_i])):
-                            for _ in weekdays[week]: days_sum += 1
+                            for _ in weekdays[week]:
+                                days_sum += 1
                         else:
                             days_sum += current_weekdays.index(weekday) + 1
                         cls.schedule += [
                             {"time": str_to_arrow(cls.time_schedule[i]).shift(days=days_sum+days_step), "subject": subject}]
                         isBreak = True
-                    if isBreak: break
-                if isBreak: break
-            if isBreak: break
+                    if isBreak:
+                        break
+                if isBreak:
+                    break
+            if isBreak:
+                break
         else:
             logger.warn("No subjects in subject schedule")
 
@@ -163,7 +169,8 @@ class SubjectAlgorythm:
             if delta.days < 0:
                 if (time - now_time).days < 0:
                     task = cls.subject_tasks[task_i - i_intend]
-                    cls.subject_tasks.remove(task); i_intend += 1
+                    cls.subject_tasks.remove(task)
+                    i_intend += 1
                     continue
                 else:
                     delta = timedelta()
@@ -172,7 +179,8 @@ class SubjectAlgorythm:
 
             # Getting and removing task from list, because it will be awaited or was cancelled
             task = cls.subject_tasks[task_i - i_intend]
-            cls.subject_tasks.remove(task); i_intend += 1
+            cls.subject_tasks.remove(task)
+            i_intend += 1
             # Awaiting if task isn't cancelled...
             if not task.cancelled():
                 await task
@@ -196,20 +204,23 @@ class SubjectAlgorythm:
         await asyncio.sleep(delta_to_seconds(delta))
 
         # Additional breakpoint if algorythm is stopped
-        if SubjectAlgorythm.isStopped: return False
+        if SubjectAlgorythm.isStopped:
+            return False
 
         # Text
         ids: list = await text(subject)
 
         # Breakpoint if it can't to send
-        if len(ids) == 0: return False
+        if len(ids) == 0:
+            return False
 
         # Waiting to delete...
         now_time = get_now()
         deleting_subject_delay = int(config["SCHEDULE"]["deleting_subject_delay"])
         delta = time.shift(minutes=deleting_subject_delay) - now_time
 
-        if delta.days < 0: delta = timedelta()
+        if delta.days < 0:
+            delta = timedelta()
 
         await asyncio.sleep(delta_to_seconds(delta))
 
@@ -239,7 +250,8 @@ class SubjectAlgorythm:
             if delta.days < 0:
                 if (subject_time - now_time).days < 0:
                     task = cls.next_subject_tasks[task_i - i_intend]
-                    cls.next_subject_tasks.remove(task); i_intend += 1;
+                    cls.next_subject_tasks.remove(task)
+                    i_intend += 1
                     continue
                 else:
                     delta = timedelta()
@@ -248,7 +260,8 @@ class SubjectAlgorythm:
 
             # Getting and removing task from list, because it will be awaited or was cancelled
             task = cls.next_subject_tasks[task_i - i_intend]
-            cls.next_subject_tasks.remove(task); i_intend += 1
+            cls.next_subject_tasks.remove(task)
+            i_intend += 1
             # Awaiting if task isn't cancelled...
             if not task.cancelled():
                 await task
@@ -271,14 +284,15 @@ class SubjectAlgorythm:
         await asyncio.sleep(delta_to_seconds(delta))
 
         # Additional breakpoint if algorythm is stopped
-        if SubjectAlgorythm.isStopped: return False
+        if SubjectAlgorythm.isStopped:
+            return False
 
         # Get humanized time
         delta = subject_time - get_now()
         localized_time = humanize_delta(delta)
 
         # Text it
-        id, text = await next_text(subject, localized_time)
+        msg_id, text = await next_text(subject, localized_time)
 
         # Breakpoint if it can't to send
         if type(text) is bool:
@@ -293,28 +307,30 @@ class SubjectAlgorythm:
             for change_task in SubjectAlgorythm.change_info:
                 if change_task['time'] == subject_time.format('H:mm') and change_task['subject'] == subject:
                     SubjectAlgorythm.change_info.remove(change_task)
-                    await delete_messages([id])
+                    await delete_messages([msg_id])
                     return True
 
             # Update humanized time to new one
             delta = subject_time - get_now()
             localized_time = humanize_delta(delta)
-            await change_next_text_time(text, id, localized_time)
+            await change_next_text_time(text, msg_id, localized_time)
 
             # If lesson has already started then stop loop
-            if delta.days < 0: break
+            if delta.days < 0:
+                break
 
         # Getting time to wait for finishing of lesson
         now_time = get_now()
         deleting_time = subject_time.shift(minutes=int(config['SCHEDULE']['deleting_subject_delay']))
         delta = deleting_time - now_time
-        if delta.days < 0: delta = timedelta()
+        if delta.days < 0:
+            delta = timedelta()
 
         # Waiting...
         await asyncio.sleep(delta_to_seconds(delta))
 
         # Deleting itself
-        await delete_messages([id])
+        await delete_messages([msg_id])
 
         return True
 
@@ -370,7 +386,7 @@ class SubjectAlgorythm:
                 else:
                     cls.change_info += [{'time': time, 'subject': next_subject['subject']}]
                     task = next_task.get_loop().create_task(
-                        cls.next_subject(send_time=next_subject['send_time'], subject_time=next_subject['subject_time'],subject=subject),
+                        cls.next_subject(send_time=next_subject['send_time'], subject_time=next_subject['subject_time'], subject=subject),
                         name=f"next_subject : {next_subject['send_time']} : {next_subject['subject_time']} : {subject}"
                     )
                     return task
