@@ -15,7 +15,9 @@ async def morning(week: str, weekday: int) -> bool:
     text = good_morning + '\n' + localized_week + ' ' + week + '\n' + weekday + '!'
     print(text)
 
-    try: await bot.send_message(chat_id=get_config().tgbot.group_id, text=text)
-    except: return False
+    try:
+        await bot.send_message(chat_id=get_config().tgbot.group_id, text=text)
+    except:
+        return False
 
     return True

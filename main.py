@@ -3,7 +3,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 
-from bot import build as tgbot_build, start as tgbot_start, logger
+from tgbot.bot import build as tgbot_build, start as tgbot_start, logger
 from algorythms.subjects_algorythm.subjects import main as algorythm_main
 
 

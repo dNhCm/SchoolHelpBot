@@ -1,6 +1,6 @@
 from aiogram import types
 
-from bot import logger
+from tgbot.bot import logger
 from tgbot.data.config import get_config
 
 

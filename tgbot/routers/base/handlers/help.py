@@ -1,4 +1,4 @@
-from aiogram import Dispatcher, types, Router
+from aiogram import types, Router
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
 

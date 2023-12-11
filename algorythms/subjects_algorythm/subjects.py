@@ -2,13 +2,14 @@ import asyncio
 import json
 from asyncio import Task
 from datetime import timedelta
+from typing import Optional
 
 from arrow import Arrow
 
 from algorythms.misc.delta_to_seconds import delta_to_seconds
 from algorythms.misc.get_now import get_now
 from algorythms.misc.humanize_delta import humanize_delta
-from bot import logger
+from tgbot.bot import logger
 from data.config import config
 from algorythms.misc.what_week import week as what_week
 from algorythms.misc.str_time_to_arrow import str_to_arrow
@@ -43,8 +44,7 @@ class SubjectAlgorythm:
         """
 
         # Getting subjects_schedules and time_schedule
-        project_path = get_root()
-        data_path = project_path+'/data'
+        data_path = get_root()+'/data'
         cls.subjects_schedules = json.load(open(data_path+"/subjects_schedules/schedules.json"))
         cls.time_schedule = json.load(open(data_path+"/time_schedule/schedule.json"))
 
@@ -395,7 +395,14 @@ class SubjectAlgorythm:
         return False
 
     @classmethod
-    async def main(cls):
+    def set_week(cls, new_week: str):
+        cls.week = new_week
+        cls.preparing()
+
+    @classmethod
+    async def main(cls, week: Optional[str] = None):
+        cls.week = week
+
         while True:
             cls.preparing()
 
@@ -406,5 +413,5 @@ class SubjectAlgorythm:
             )
 
 
-async def main():
-    await SubjectAlgorythm.main()
+async def main(week: Optional[str] = None):
+    await SubjectAlgorythm.main(week)

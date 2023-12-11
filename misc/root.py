@@ -8,6 +8,7 @@ def get_root() -> str:
 
     return "/".join(root[:-2])
 
+
 def get_abspath(file: __file__) -> str:
     return (
         os.path.abspath(file).split('\\')[:-1]
